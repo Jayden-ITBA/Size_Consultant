@@ -1,143 +1,224 @@
-// Dữ liệu mặc định cho các loại trang phục
-const defaultCharts = {
-    tshirt: [
-        { size: 'S', heightRange: [160, 170], weightRange: [55, 65], note: 'Vừa vặn (Fit vừa)' },
-        { size: 'M', heightRange: [168, 178], weightRange: [65, 78], note: 'Phù hợp Gymmer' },
-        { size: 'L', heightRange: [175, 185], weightRange: [78, 90], note: 'Form Cơ bắp (Muscular)' },
-        { size: 'XL', heightRange: [180, 190], weightRange: [90, 105], note: 'Form Rất cơ bắp (Big Muscular)' }
-    ],
-    pants: [
-        { size: '28', heightRange: [160, 170], weightRange: [50, 60], note: 'Slim Fit' },
-        { size: '30', heightRange: [165, 175], weightRange: [60, 70], note: 'Regular Fit' },
-        { size: '32', heightRange: [170, 180], weightRange: [70, 80], note: 'Comfort Fit' },
-        { size: '34', heightRange: [175, 185], weightRange: [80, 95], note: 'Loose Fit' }
-    ],
-    outerwear: [
-        { size: 'M', heightRange: [160, 175], weightRange: [55, 70], note: 'Standard' },
-        { size: 'L', heightRange: [170, 185], weightRange: [70, 85], note: 'Oversized' },
-        { size: 'XL', heightRange: [180, 195], weightRange: [85, 105], note: 'Very Oversized' }
-    ]
+// --- Dữ liệu mặc định ---
+const defaultProducts = [
+    {
+        id: 'p1',
+        name: 'Áo Tank / T-shirt (Mẫu)',
+        chart: [
+            { size: 'S', hMin: 160, hMax: 170, wMin: 55, wMax: 65, note: 'Fit vừa' },
+            { size: 'M', hMin: 168, hMax: 178, wMin: 65, wMax: 78, note: 'Phù hợp gymmer' },
+            { size: 'L', hMin: 175, hMax: 185, wMin: 78, wMax: 90, note: 'Cơ bắp' },
+            { size: 'XL', hMin: 180, hMax: 190, wMin: 90, wMax: 105, note: 'Rất cơ bắp' }
+        ]
+    }
+];
+
+// --- Khởi tạo ---
+let products = JSON.parse(localStorage.getItem('premium_products')) || defaultProducts;
+let activeProductId = null;
+
+// --- DOM Elements ---
+const viewToggle = document.getElementById('view-toggle');
+const toggleText = document.getElementById('toggle-text');
+const userView = document.getElementById('user-view');
+const adminView = document.getElementById('admin-view');
+
+const productDropdown = document.getElementById('product-dropdown');
+const productList = document.getElementById('product-list');
+const productEditor = document.getElementById('product-editor');
+const editorEmpty = document.getElementById('editor-empty');
+const sizeTableBody = document.getElementById('size-table-body');
+const editProductName = document.getElementById('edit-product-name');
+
+// --- Điều hướng ---
+viewToggle.addEventListener('click', () => {
+    if (userView.classList.contains('active')) {
+        userView.classList.remove('active');
+        userView.classList.add('hidden');
+        adminView.classList.remove('hidden');
+        adminView.classList.add('active');
+        toggleText.textContent = 'Trang khách hàng';
+        renderAdminSidebar();
+    } else {
+        adminView.classList.remove('active');
+        adminView.classList.add('hidden');
+        userView.classList.remove('hidden');
+        userView.classList.add('active');
+        toggleText.textContent = 'Quản lý (Admin)';
+        renderUserDropdown();
+    }
+});
+
+// --- Quản lý Admin ---
+function renderAdminSidebar() {
+    productList.innerHTML = '';
+    products.forEach(p => {
+        const item = document.createElement('div');
+        item.className = `product-item ${p.id === activeProductId ? 'active' : ''}`;
+        item.textContent = p.name;
+        item.onclick = () => loadProductToEditor(p.id);
+        productList.appendChild(item);
+    });
+}
+
+document.getElementById('add-new-product-btn').onclick = () => {
+    const newId = 'prod_' + Date.now();
+    const newProd = { id: newId, name: 'Sản phẩm mới', chart: [] };
+    products.push(newProd);
+    activeProductId = newId;
+    renderAdminSidebar();
+    loadProductToEditor(newId);
 };
 
-// Khởi tạo từ LocalStorage
-let allCharts = JSON.parse(localStorage.getItem('multiSizeCharts')) || defaultCharts;
-let currentType = 'tshirt';
+function loadProductToEditor(id) {
+    activeProductId = id;
+    const product = products.find(p => p.id === id);
+    if (!product) return;
 
-// DOM Elements
-const adminToggle = document.getElementById('admin-toggle');
-const adminPanel = document.getElementById('admin-panel');
-const closeAdmin = document.getElementById('close-admin');
-const adminProductType = document.getElementById('admin-product-type');
-const chartUpload = document.getElementById('chart-upload');
-const uploadZone = document.getElementById('upload-zone');
-const previewContainer = document.getElementById('preview-container');
-const imagePreview = document.getElementById('image-preview');
-const processBtn = document.getElementById('process-image-btn');
-const aiStatus = document.getElementById('ai-status');
+    editorEmpty.classList.add('hidden');
+    productEditor.classList.remove('hidden');
+    editProductName.value = product.name;
+    
+    renderSizeTable(product.chart);
+    renderAdminSidebar();
+}
 
-const typeChips = document.querySelectorAll('.chip');
-const calculateBtn = document.getElementById('calculate-btn');
-const resultSection = document.getElementById('result-section');
-
-// Product Selection Logic
-typeChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-        typeChips.forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        currentType = chip.dataset.type;
-        // Hide results if type changes to avoid confusion
-        resultSection.classList.add('hidden');
+function renderSizeTable(chart) {
+    sizeTableBody.innerHTML = '';
+    chart.forEach((row, idx) => {
+        addTableRow(row);
     });
-});
+}
 
-// Admin Panel Logic
-adminToggle.addEventListener('click', () => adminPanel.classList.remove('hidden'));
-closeAdmin.addEventListener('click', () => adminPanel.classList.add('hidden'));
+function addTableRow(data = {}) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><input type="text" value="${data.size || ''}" placeholder="S"></td>
+        <td><input type="number" value="${data.hMin || ''}" placeholder="160"></td>
+        <td><input type="number" value="${data.hMax || ''}" placeholder="170"></td>
+        <td><input type="number" value="${data.wMin || ''}" placeholder="55"></td>
+        <td><input type="number" value="${data.wMax || ''}" placeholder="65"></td>
+        <td><input type="text" value="${data.note || ''}" placeholder="Fit vừa"></td>
+        <td><button class="delete-row-btn" onclick="this.closest('tr').remove()">&times;</button></td>
+    `;
+    sizeTableBody.appendChild(tr);
+}
 
-uploadZone.addEventListener('click', () => chartUpload.click());
-chartUpload.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            imagePreview.src = e.target.result;
-            document.getElementById('upload-placeholder').classList.add('hidden');
-            previewContainer.classList.remove('hidden');
+document.getElementById('add-row-btn').onclick = () => addTableRow();
+
+document.getElementById('save-product-btn').onclick = () => {
+    const product = products.find(p => p.id === activeProductId);
+    if (!product) return;
+
+    product.name = editProductName.value;
+    const rows = Array.from(sizeTableBody.querySelectorAll('tr'));
+    product.chart = rows.map(tr => {
+        const inputs = tr.querySelectorAll('input');
+        return {
+            size: inputs[0].value,
+            hMin: parseFloat(inputs[1].value),
+            hMax: parseFloat(inputs[2].value),
+            wMin: parseFloat(inputs[3].value),
+            wMax: parseFloat(inputs[4].value),
+            note: inputs[5].value
         };
-        reader.readAsDataURL(file);
+    });
+
+    localStorage.setItem('premium_products', JSON.stringify(products));
+    renderAdminSidebar();
+    alert('Đã lưu sản phẩm thành công!');
+};
+
+document.getElementById('delete-product-btn').onclick = () => {
+    if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
+        products = products.filter(p => p.id !== activeProductId);
+        localStorage.setItem('premium_products', JSON.stringify(products));
+        activeProductId = null;
+        productEditor.classList.add('hidden');
+        editorEmpty.classList.remove('hidden');
+        renderAdminSidebar();
     }
-});
+};
 
-// Mock AI Logic for multi-type
-processBtn.addEventListener('click', async () => {
-    aiStatus.classList.remove('hidden');
-    processBtn.classList.add('hidden');
-    
-    await new Promise(resolve => setTimeout(resolve, 2500));
+// --- Import Excel ---
+const excelInput = document.getElementById('excel-input');
+document.getElementById('import-excel-btn').onclick = () => excelInput.click();
 
-    const selectedAdminType = adminProductType.value;
-    
-    // Giả lập dữ liệu nhận diện khác nhau cho từng loại
-    let newData = [];
-    if (selectedAdminType === 'pants') {
-        newData = [
-            { size: '29', heightRange: [160, 170], weightRange: [55, 65], note: 'Slim' },
-            { size: '31', heightRange: [168, 178], weightRange: [65, 78], note: 'Regular' },
-            { size: '33', heightRange: [175, 185], weightRange: [78, 90], note: 'Straight' }
-        ];
-    } else {
-        newData = defaultCharts[selectedAdminType]; // Dùng mẫu cho các loại khác
-    }
+excelInput.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-    allCharts[selectedAdminType] = newData;
-    localStorage.setItem('multiSizeCharts', JSON.stringify(allCharts));
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+        const bstr = evt.target.result;
+        const wb = XLSX.read(bstr, { type: 'binary' });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const data = XLSX.utils.sheet_to_json(ws);
 
-    aiStatus.innerHTML = `<span style="color: #4facfe">✓ Đã cập nhật bảng size cho ${selectedAdminType}!</span>`;
-    
-    setTimeout(() => {
-        adminPanel.classList.add('hidden');
-        aiStatus.classList.add('hidden');
-        processBtn.classList.remove('hidden');
-        previewContainer.classList.add('hidden');
-        document.getElementById('upload-placeholder').classList.remove('hidden');
-    }, 1500);
-});
+        // Quy ước: Excel có các cột: Size, HeightMin, HeightMax, WeightMin, WeightMax, Note
+        // Chúng ta sẽ map chúng vào bảng
+        sizeTableBody.innerHTML = '';
+        data.forEach(row => {
+            addTableRow({
+                size: row.Size || row['Kích cỡ'] || '',
+                hMin: row.HeightMin || row['Cao Min'] || '',
+                hMax: row.HeightMax || row['Cao Max'] || '',
+                wMin: row.WeightMin || row['Nặng Min'] || '',
+                wMax: row.WeightMax || row['Nặng Max'] || '',
+                note: row.Note || row['Ghi chú'] || ''
+            });
+        });
+    };
+    reader.readAsBinaryString(file);
+};
 
-// Calculation Logic
-calculateBtn.addEventListener('click', () => {
+// --- Giao diện khách hàng ---
+function renderUserDropdown() {
+    productDropdown.innerHTML = '<option value="">-- Chọn sản phẩm --</option>';
+    products.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = p.name;
+        productDropdown.appendChild(opt);
+    });
+}
+
+document.getElementById('calculate-btn').onclick = () => {
+    const pId = productDropdown.value;
     const h = parseFloat(document.getElementById('height').value);
     const w = parseFloat(document.getElementById('weight').value);
-    if (!h || !w) return alert('Vui lòng nhập đủ thông số!');
 
-    const currentChart = allCharts[currentType];
-    const result = findBestSize(h, w, currentChart);
-    displayResult(result, currentChart);
-});
+    if (!pId) return alert('Vui lòng chọn sản phẩm!');
+    if (!h || !w) return alert('Vui lòng nhập chiều cao và cân nặng!');
 
-function findBestSize(h, w, chart) {
+    const product = products.find(p => p.id === pId);
+    const result = calculateSize(h, w, product.chart);
+    showResult(result);
+};
+
+function calculateSize(h, w, chart) {
+    if (!chart || chart.length === 0) return null;
+
     let bestMatch = null;
     let minDiff = Infinity;
 
+    // Tìm size mà người dùng nằm trong khoảng (có sai số 2cm/2kg)
     const possible = chart.filter(s => 
-        (h >= s.heightRange[0] - 2 && h <= s.heightRange[1] + 2) && 
-        (w >= s.weightRange[0] - 2 && w <= s.weightRange[1] + 2)
+        (h >= s.hMin - 2 && h <= s.hMax + 2) && (w >= s.wMin - 2 && w <= s.wMax + 2)
     );
 
     if (possible.length === 0) {
-        let closest = chart[0];
-        let minGlobalDiff = Infinity;
+        // Tìm size gần nhất nếu không trúng khoảng nào
         chart.forEach(s => {
-            const hMid = (s.heightRange[0] + s.heightRange[1]) / 2;
-            const wMid = (s.weightRange[0] + s.weightRange[1]) / 2;
+            const hMid = (s.hMin + s.hMax) / 2;
+            const wMid = (s.wMin + s.wMax) / 2;
             const diff = Math.abs(h - hMid) / 10 + Math.abs(w - wMid);
-            if (diff < minGlobalDiff) {
-                minGlobalDiff = diff; closest = s;
-            }
+            if (diff < minDiff) { minDiff = diff; bestMatch = s; }
         });
-        bestMatch = closest;
     } else {
+        // Ưu tiên cân nặng
         possible.forEach(s => {
-            const wMid = (s.weightRange[0] + s.weightRange[1]) / 2;
+            const wMid = (s.wMin + s.wMax) / 2;
             const diff = Math.abs(w - wMid);
             if (diff < minDiff) { minDiff = diff; bestMatch = s; }
         });
@@ -151,32 +232,18 @@ function findBestSize(h, w, chart) {
     };
 }
 
-function displayResult(res, chart) {
-    resultSection.classList.remove('hidden');
-    setTimeout(() => resultSection.classList.add('show'), 10);
+function showResult(res) {
+    const section = document.getElementById('result-section');
+    section.classList.remove('hidden');
 
     document.getElementById('best-size').textContent = res.standard.size;
     document.getElementById('size-note').textContent = res.standard.note;
     document.getElementById('standard-size').textContent = res.standard.size;
-    
-    const tEl = document.getElementById('tight-size');
-    const lEl = document.getElementById('loose-size');
+    document.getElementById('tight-size').textContent = res.tight ? res.tight.size : '-';
+    document.getElementById('loose-size').textContent = res.loose ? res.loose.size : '-';
 
-    if (res.tight) {
-        tEl.textContent = res.tight.size;
-        document.getElementById('tight-option').style.opacity = '1';
-    } else {
-        tEl.textContent = '-';
-        document.getElementById('tight-option').style.opacity = '0.3';
-    }
-
-    if (res.loose) {
-        lEl.textContent = res.loose.size;
-        document.getElementById('loose-option').style.opacity = '1';
-    } else {
-        lEl.textContent = '-';
-        document.getElementById('loose-option').style.opacity = '0.3';
-    }
-
-    resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
+
+// Chạy lần đầu
+renderUserDropdown();

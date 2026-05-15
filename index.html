@@ -3,123 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Công cụ Tư vấn Size - Premium Brand</title>
+    <title>Size Consultant Manager - Premium</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- SheetJS for Excel Support -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <button id="admin-toggle" class="admin-toggle" title="Cài đặt bảng size">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-    </button>
+    <!-- Top Navigation for Admin Toggle -->
+    <nav class="top-nav">
+        <div class="logo">FIT<span>ASSIST</span></div>
+        <button id="view-toggle" class="view-toggle">
+            <span id="toggle-text">Quản lý (Admin)</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+    </nav>
 
-    <div id="admin-panel" class="admin-panel hidden">
-        <div class="admin-content">
-            <div class="admin-header">
-                <h2>Cài đặt Bảng Size</h2>
-                <button id="close-admin" class="close-btn">&times;</button>
-            </div>
-            
-            <div class="field">
-                <label>Loại sản phẩm cần cập nhật:</label>
-                <select id="admin-product-type" class="admin-select">
-                    <option value="tshirt">Áo Tank / T-shirt</option>
-                    <option value="pants">Quần Short / Long</option>
-                    <option value="outerwear">Áo khoác / Hoodie</option>
-                </select>
-            </div>
+    <!-- User View: Customer Consultation -->
+    <section id="user-view" class="view-section active">
+        <div class="container">
+            <header>
+                <h1>Tư vấn Size Thông Minh</h1>
+                <p class="subtitle">Tìm kích cỡ hoàn hảo cho từng sản phẩm.</p>
+            </header>
 
-            <div class="upload-zone" id="upload-zone">
-                <input type="file" id="chart-upload" accept="image/*" hidden>
-                <div class="upload-placeholder" id="upload-placeholder">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-plus"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><line x1="16" y1="5" x2="22" y2="5"/><line x1="19" y1="2" x2="19" y2="8"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                    <p>Tải ảnh bảng size mới</p>
+            <main class="glass-card">
+                <div class="field">
+                    <label>Chọn sản phẩm:</label>
+                    <select id="product-dropdown" class="main-select">
+                        <option value="">-- Đang tải sản phẩm --</option>
+                    </select>
                 </div>
-                <div id="preview-container" class="hidden">
-                    <img id="image-preview" src="" alt="Preview">
-                    <button id="process-image-btn" class="process-btn">Phân tích bằng AI</button>
+
+                <div class="input-group">
+                    <div class="field">
+                        <label>Chiều cao (cm)</label>
+                        <input type="number" id="height" placeholder="172">
+                    </div>
+                    <div class="field">
+                        <label>Cân nặng (kg)</label>
+                        <input type="number" id="weight" placeholder="68">
+                    </div>
                 </div>
+
+                <button id="calculate-btn" class="primary-btn">Nhận kết quả ngay</button>
+
+                <div id="result-section" class="result-section hidden">
+                    <div class="divider"></div>
+                    <div class="recommendation-main">
+                        <span class="label">Size đề xuất:</span>
+                        <div class="size-display"><span id="best-size">L</span></div>
+                        <p id="size-note"></p>
+                    </div>
+                    <div class="alternative-options">
+                        <div class="option" id="tight-option">
+                            <span class="option-label">Ôm sát</span>
+                            <span class="option-size" id="tight-size">-</span>
+                        </div>
+                        <div class="option active">
+                            <span class="option-label">Vừa vặn</span>
+                            <span class="option-size" id="standard-size">-</span>
+                        </div>
+                        <div class="option" id="loose-option">
+                            <span class="option-label">Rộng rãi</span>
+                            <span class="option-size" id="loose-size">-</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <!-- Admin View: Product Management -->
+    <section id="admin-view" class="view-section hidden">
+        <div class="admin-container">
+            <div class="admin-sidebar">
+                <h3>Sản phẩm</h3>
+                <div id="product-list" class="product-list">
+                    <!-- Products will be listed here -->
+                </div>
+                <button id="add-new-product-btn" class="secondary-btn">+ Thêm sản phẩm mới</button>
             </div>
 
-            <div id="ai-status" class="ai-status hidden">
-                <div class="spinner"></div>
-                <span id="ai-status-text">AI đang đọc bảng size...</span>
+            <div class="admin-main">
+                <div id="editor-empty" class="editor-placeholder">
+                    <p>Chọn một sản phẩm hoặc thêm mới để bắt đầu thiết lập bảng size.</p>
+                </div>
+
+                <div id="product-editor" class="product-editor hidden">
+                    <div class="editor-header">
+                        <input type="text" id="edit-product-name" placeholder="Tên sản phẩm (Ví dụ: Áo sơ mi Slimfit)">
+                        <div class="header-actions">
+                            <button id="import-excel-btn" class="icon-btn" title="Import từ Excel/CSV">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-up"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 12v6"/><path d="m15 15-3-3-3 3"/></svg>
+                            </button>
+                            <button id="save-product-btn" class="save-btn">Lưu sản phẩm</button>
+                            <button id="delete-product-btn" class="danger-btn">Xóa</button>
+                        </div>
+                    </div>
+                    
+                    <input type="file" id="excel-input" hidden accept=".xlsx, .xls, .csv">
+
+                    <div class="table-container">
+                        <table id="size-table">
+                            <thead>
+                                <tr>
+                                    <th>Size</th>
+                                    <th>Cao Min (cm)</th>
+                                    <th>Cao Max (cm)</th>
+                                    <th>Nặng Min (kg)</th>
+                                    <th>Nặng Max (kg)</th>
+                                    <th>Ghi chú</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="size-table-body">
+                                <!-- Rows will be added here -->
+                            </tbody>
+                        </table>
+                        <button id="add-row-btn" class="add-row-btn">+ Thêm dòng thông số</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div class="container">
-        <header>
-            <h1 class="animate-fade-in">Tư vấn Size Thông Minh</h1>
-            <p class="subtitle animate-fade-in delay-1">Lựa chọn hoàn hảo cho phong cách của bạn.</p>
-        </header>
-
-        <main class="glass-card animate-slide-up delay-2">
-            <!-- Product Selector -->
-            <div class="product-selector">
-                <label>Loại sản phẩm:</label>
-                <div class="type-chips" id="product-type-chips">
-                    <button class="chip active" data-type="tshirt">Áo T-shirt</button>
-                    <button class="chip" data-type="pants">Quần</button>
-                    <button class="chip" data-type="outerwear">Áo Khoác</button>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <div class="field">
-                    <label for="height">Chiều cao (cm)</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="height" placeholder="Ví dụ: 172" min="100" max="250">
-                        <span class="unit">cm</span>
-                    </div>
-                </div>
-                <div class="field">
-                    <label for="weight">Cân nặng (kg)</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="weight" placeholder="Ví dụ: 68" min="30" max="200">
-                        <span class="unit">kg</span>
-                    </div>
-                </div>
-            </div>
-
-            <button id="calculate-btn" class="primary-btn">
-                <span>Tìm Size Ngay</span>
-                <div class="btn-glow"></div>
-            </button>
-
-            <div id="result-section" class="result-section hidden">
-                <div class="divider"></div>
-                
-                <div class="recommendation-main">
-                    <span class="label">Size phù hợp nhất:</span>
-                    <div class="size-display">
-                        <span id="best-size">M</span>
-                        <p id="size-note">Vừa vặn</p>
-                    </div>
-                </div>
-
-                <div class="alternative-options">
-                    <div class="option" id="tight-option">
-                        <span class="option-label">Mặc ôm sát</span>
-                        <span class="option-size" id="tight-size">S</span>
-                    </div>
-                    <div class="option active" id="standard-option">
-                        <span class="option-label">Vừa vặn</span>
-                        <span class="option-size" id="standard-size">M</span>
-                    </div>
-                    <div class="option" id="loose-option">
-                        <span class="option-label">Rộng rãi</span>
-                        <span class="option-size" id="loose-size">L</span>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <footer>
-            <p>&copy; 2026 Premium Fit Assistant. AI-Powered Selection.</p>
-        </footer>
-    </div>
     <script src="script.js"></script>
 </body>
 </html>
