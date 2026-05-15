@@ -10,6 +10,37 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <button id="admin-toggle" class="admin-toggle" title="Cài đặt bảng size">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+    </button>
+
+    <div id="admin-panel" class="admin-panel hidden">
+        <div class="admin-content">
+            <div class="admin-header">
+                <h2>Cài đặt Bảng Size</h2>
+                <button id="close-admin" class="close-btn">&times;</button>
+            </div>
+            <p class="admin-desc">Tải ảnh bảng size của bạn lên, AI sẽ tự động phân tích và cập nhật thông số cho toàn bộ hệ thống.</p>
+            
+            <div class="upload-zone" id="upload-zone">
+                <input type="file" id="chart-upload" accept="image/*" hidden>
+                <div class="upload-placeholder" id="upload-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-plus"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><line x1="16" y1="5" x2="22" y2="5"/><line x1="19" y1="2" x2="19" y2="8"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                    <p>Nhấp hoặc kéo thả ảnh vào đây</p>
+                </div>
+                <div id="preview-container" class="hidden">
+                    <img id="image-preview" src="" alt="Preview">
+                    <button id="process-image-btn" class="process-btn">Phân tích bằng AI</button>
+                </div>
+            </div>
+
+            <div id="ai-status" class="ai-status hidden">
+                <div class="spinner"></div>
+                <span id="ai-status-text">Đang phân tích thông số bảng size...</span>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <header>
             <h1 class="animate-fade-in">Tư vấn Size Thông Minh</h1>
@@ -68,7 +99,7 @@
         </main>
 
         <footer>
-            <p>&copy; 2026 Premium Fit Assistant. Toàn bộ dữ liệu dựa trên bảng size chuẩn của thương hiệu.</p>
+            <p>&copy; 2026 Premium Fit Assistant. AI-Powered Size Recognition.</p>
         </footer>
     </div>
     <script src="script.js"></script>
