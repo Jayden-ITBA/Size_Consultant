@@ -20,13 +20,21 @@
                 <h2>Cài đặt Bảng Size</h2>
                 <button id="close-admin" class="close-btn">&times;</button>
             </div>
-            <p class="admin-desc">Tải ảnh bảng size của bạn lên, AI sẽ tự động phân tích và cập nhật thông số cho toàn bộ hệ thống.</p>
             
+            <div class="field">
+                <label>Loại sản phẩm cần cập nhật:</label>
+                <select id="admin-product-type" class="admin-select">
+                    <option value="tshirt">Áo Tank / T-shirt</option>
+                    <option value="pants">Quần Short / Long</option>
+                    <option value="outerwear">Áo khoác / Hoodie</option>
+                </select>
+            </div>
+
             <div class="upload-zone" id="upload-zone">
                 <input type="file" id="chart-upload" accept="image/*" hidden>
                 <div class="upload-placeholder" id="upload-placeholder">
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-plus"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><line x1="16" y1="5" x2="22" y2="5"/><line x1="19" y1="2" x2="19" y2="8"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                    <p>Nhấp hoặc kéo thả ảnh vào đây</p>
+                    <p>Tải ảnh bảng size mới</p>
                 </div>
                 <div id="preview-container" class="hidden">
                     <img id="image-preview" src="" alt="Preview">
@@ -36,7 +44,7 @@
 
             <div id="ai-status" class="ai-status hidden">
                 <div class="spinner"></div>
-                <span id="ai-status-text">Đang phân tích thông số bảng size...</span>
+                <span id="ai-status-text">AI đang đọc bảng size...</span>
             </div>
         </div>
     </div>
@@ -44,10 +52,20 @@
     <div class="container">
         <header>
             <h1 class="animate-fade-in">Tư vấn Size Thông Minh</h1>
-            <p class="subtitle animate-fade-in delay-1">Hãy nhập số đo của bạn để tìm size áo hoàn hảo nhất.</p>
+            <p class="subtitle animate-fade-in delay-1">Lựa chọn hoàn hảo cho phong cách của bạn.</p>
         </header>
 
         <main class="glass-card animate-slide-up delay-2">
+            <!-- Product Selector -->
+            <div class="product-selector">
+                <label>Loại sản phẩm:</label>
+                <div class="type-chips" id="product-type-chips">
+                    <button class="chip active" data-type="tshirt">Áo T-shirt</button>
+                    <button class="chip" data-type="pants">Quần</button>
+                    <button class="chip" data-type="outerwear">Áo Khoác</button>
+                </div>
+            </div>
+
             <div class="input-group">
                 <div class="field">
                     <label for="height">Chiều cao (cm)</label>
@@ -74,24 +92,24 @@
                 <div class="divider"></div>
                 
                 <div class="recommendation-main">
-                    <span class="label">Size phù hợp nhất của bạn:</span>
+                    <span class="label">Size phù hợp nhất:</span>
                     <div class="size-display">
                         <span id="best-size">M</span>
-                        <p id="size-note">Phù hợp gymmer</p>
+                        <p id="size-note">Vừa vặn</p>
                     </div>
                 </div>
 
                 <div class="alternative-options">
                     <div class="option" id="tight-option">
-                        <span class="option-label">Mặc ôm sát (Tight)</span>
+                        <span class="option-label">Mặc ôm sát</span>
                         <span class="option-size" id="tight-size">S</span>
                     </div>
                     <div class="option active" id="standard-option">
-                        <span class="option-label">Vừa vặn (Standard)</span>
+                        <span class="option-label">Vừa vặn</span>
                         <span class="option-size" id="standard-size">M</span>
                     </div>
                     <div class="option" id="loose-option">
-                        <span class="option-label">Rộng rãi (Loose)</span>
+                        <span class="option-label">Rộng rãi</span>
                         <span class="option-size" id="loose-size">L</span>
                     </div>
                 </div>
@@ -99,7 +117,7 @@
         </main>
 
         <footer>
-            <p>&copy; 2026 Premium Fit Assistant. AI-Powered Size Recognition.</p>
+            <p>&copy; 2026 Premium Fit Assistant. AI-Powered Selection.</p>
         </footer>
     </div>
     <script src="script.js"></script>

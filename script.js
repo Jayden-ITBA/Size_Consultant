@@ -1,166 +1,180 @@
-// Dữ liệu mặc định
-const defaultSizeChart = [
-    { size: 'S', heightRange: [160, 170], weightRange: [55, 65], note: 'Vừa vặn (Fit vừa)' },
-    { size: 'M', heightRange: [168, 178], weightRange: [65, 78], note: 'Phù hợp Gymmer' },
-    { size: 'L', heightRange: [175, 185], weightRange: [78, 90], note: 'Form Cơ bắp (Muscular)' },
-    { size: 'XL', heightRange: [180, 190], weightRange: [90, 105], note: 'Form Rất cơ bắp (Big Muscular)' }
-];
+// Dữ liệu mặc định cho các loại trang phục
+const defaultCharts = {
+    tshirt: [
+        { size: 'S', heightRange: [160, 170], weightRange: [55, 65], note: 'Vừa vặn (Fit vừa)' },
+        { size: 'M', heightRange: [168, 178], weightRange: [65, 78], note: 'Phù hợp Gymmer' },
+        { size: 'L', heightRange: [175, 185], weightRange: [78, 90], note: 'Form Cơ bắp (Muscular)' },
+        { size: 'XL', heightRange: [180, 190], weightRange: [90, 105], note: 'Form Rất cơ bắp (Big Muscular)' }
+    ],
+    pants: [
+        { size: '28', heightRange: [160, 170], weightRange: [50, 60], note: 'Slim Fit' },
+        { size: '30', heightRange: [165, 175], weightRange: [60, 70], note: 'Regular Fit' },
+        { size: '32', heightRange: [170, 180], weightRange: [70, 80], note: 'Comfort Fit' },
+        { size: '34', heightRange: [175, 185], weightRange: [80, 95], note: 'Loose Fit' }
+    ],
+    outerwear: [
+        { size: 'M', heightRange: [160, 175], weightRange: [55, 70], note: 'Standard' },
+        { size: 'L', heightRange: [170, 185], weightRange: [70, 85], note: 'Oversized' },
+        { size: 'XL', heightRange: [180, 195], weightRange: [85, 105], note: 'Very Oversized' }
+    ]
+};
 
-// Khởi tạo bảng size từ LocalStorage hoặc dùng mặc định
-let sizeChart = JSON.parse(localStorage.getItem('customSizeChart')) || defaultSizeChart;
+// Khởi tạo từ LocalStorage
+let allCharts = JSON.parse(localStorage.getItem('multiSizeCharts')) || defaultCharts;
+let currentType = 'tshirt';
 
 // DOM Elements
 const adminToggle = document.getElementById('admin-toggle');
 const adminPanel = document.getElementById('admin-panel');
 const closeAdmin = document.getElementById('close-admin');
-const uploadZone = document.getElementById('upload-zone');
+const adminProductType = document.getElementById('admin-product-type');
 const chartUpload = document.getElementById('chart-upload');
-const uploadPlaceholder = document.getElementById('upload-placeholder');
+const uploadZone = document.getElementById('upload-zone');
 const previewContainer = document.getElementById('preview-container');
 const imagePreview = document.getElementById('image-preview');
 const processBtn = document.getElementById('process-image-btn');
 const aiStatus = document.getElementById('ai-status');
 
+const typeChips = document.querySelectorAll('.chip');
 const calculateBtn = document.getElementById('calculate-btn');
 const resultSection = document.getElementById('result-section');
-const bestSizeEl = document.getElementById('best-size');
-const sizeNoteEl = document.getElementById('size-note');
-const tightSizeEl = document.getElementById('tight-size');
-const standardSizeEl = document.getElementById('standard-size');
-const looseSizeEl = document.getElementById('loose-size');
+
+// Product Selection Logic
+typeChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+        typeChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentType = chip.dataset.type;
+        // Hide results if type changes to avoid confusion
+        resultSection.classList.add('hidden');
+    });
+});
 
 // Admin Panel Logic
 adminToggle.addEventListener('click', () => adminPanel.classList.remove('hidden'));
 closeAdmin.addEventListener('click', () => adminPanel.classList.add('hidden'));
 
-// Upload Logic
 uploadZone.addEventListener('click', () => chartUpload.click());
-
 chartUpload.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
             imagePreview.src = e.target.result;
-            uploadPlaceholder.classList.add('hidden');
+            document.getElementById('upload-placeholder').classList.add('hidden');
             previewContainer.classList.remove('hidden');
         };
         reader.readAsDataURL(file);
     }
 });
 
-// AI Recognition Simulation (In reality, you would call an AI API like Gemini)
+// Mock AI Logic for multi-type
 processBtn.addEventListener('click', async () => {
     aiStatus.classList.remove('hidden');
     processBtn.classList.add('hidden');
     
-    // Giả lập xử lý AI trong 3 giây
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise(resolve => setTimeout(resolve, 2500));
 
-    // Đây là nơi bạn sẽ gọi API để nhận diện bảng size.
-    // Dưới đây là kết quả mẫu sau khi AI "quét" hình ảnh bạn cung cấp
-    const recognizedData = [
-        { size: 'S', heightRange: [160, 170], weightRange: [55, 65], note: 'Fit vừa' },
-        { size: 'M', heightRange: [168, 178], weightRange: [65, 78], note: 'Phù hợp gymmer' },
-        { size: 'L', heightRange: [175, 185], weightRange: [78, 90], note: 'Cơ bắp' },
-        { size: 'XL', heightRange: [180, 190], weightRange: [90, 105], note: 'Rất cơ bắp' }
-    ];
+    const selectedAdminType = adminProductType.value;
+    
+    // Giả lập dữ liệu nhận diện khác nhau cho từng loại
+    let newData = [];
+    if (selectedAdminType === 'pants') {
+        newData = [
+            { size: '29', heightRange: [160, 170], weightRange: [55, 65], note: 'Slim' },
+            { size: '31', heightRange: [168, 178], weightRange: [65, 78], note: 'Regular' },
+            { size: '33', heightRange: [175, 185], weightRange: [78, 90], note: 'Straight' }
+        ];
+    } else {
+        newData = defaultCharts[selectedAdminType]; // Dùng mẫu cho các loại khác
+    }
 
-    // Cập nhật hệ thống
-    sizeChart = recognizedData;
-    localStorage.setItem('customSizeChart', JSON.stringify(sizeChart));
+    allCharts[selectedAdminType] = newData;
+    localStorage.setItem('multiSizeCharts', JSON.stringify(allCharts));
 
-    aiStatus.innerHTML = '<span style="color: #4facfe">✓ Đã cập nhật bảng size thành công!</span>';
+    aiStatus.innerHTML = `<span style="color: #4facfe">✓ Đã cập nhật bảng size cho ${selectedAdminType}!</span>`;
     
     setTimeout(() => {
         adminPanel.classList.add('hidden');
-        // Reset Admin UI
         aiStatus.classList.add('hidden');
         processBtn.classList.remove('hidden');
-        uploadPlaceholder.classList.remove('hidden');
         previewContainer.classList.add('hidden');
+        document.getElementById('upload-placeholder').classList.remove('hidden');
     }, 1500);
 });
 
 // Calculation Logic
 calculateBtn.addEventListener('click', () => {
-    const height = parseFloat(document.getElementById('height').value);
-    const weight = parseFloat(document.getElementById('weight').value);
+    const h = parseFloat(document.getElementById('height').value);
+    const w = parseFloat(document.getElementById('weight').value);
+    if (!h || !w) return alert('Vui lòng nhập đủ thông số!');
 
-    if (!height || !weight) {
-        alert('Vui lòng nhập đầy đủ chiều cao và cân nặng!');
-        return;
-    }
-
-    const result = findBestSize(height, weight);
-    displayResult(result);
+    const currentChart = allCharts[currentType];
+    const result = findBestSize(h, w, currentChart);
+    displayResult(result, currentChart);
 });
 
-function findBestSize(h, w) {
+function findBestSize(h, w, chart) {
     let bestMatch = null;
     let minDiff = Infinity;
 
-    // Tìm size phù hợp nhất
-    const possibleSizes = sizeChart.filter(s => {
-        const inHeight = (h >= s.heightRange[0] - 2 && h <= s.heightRange[1] + 2);
-        const inWeight = (w >= s.weightRange[0] - 2 && w <= s.weightRange[1] + 2);
-        return inHeight && inWeight;
-    });
+    const possible = chart.filter(s => 
+        (h >= s.heightRange[0] - 2 && h <= s.heightRange[1] + 2) && 
+        (w >= s.weightRange[0] - 2 && w <= s.weightRange[1] + 2)
+    );
 
-    if (possibleSizes.length === 0) {
-        let closest = sizeChart[0];
+    if (possible.length === 0) {
+        let closest = chart[0];
         let minGlobalDiff = Infinity;
-        sizeChart.forEach(s => {
+        chart.forEach(s => {
             const hMid = (s.heightRange[0] + s.heightRange[1]) / 2;
             const wMid = (s.weightRange[0] + s.weightRange[1]) / 2;
             const diff = Math.abs(h - hMid) / 10 + Math.abs(w - wMid);
             if (diff < minGlobalDiff) {
-                minGlobalDiff = diff;
-                closest = s;
+                minGlobalDiff = diff; closest = s;
             }
         });
         bestMatch = closest;
     } else {
-        possibleSizes.forEach(s => {
+        possible.forEach(s => {
             const wMid = (s.weightRange[0] + s.weightRange[1]) / 2;
             const diff = Math.abs(w - wMid);
-            if (diff < minDiff) {
-                minDiff = diff;
-                bestMatch = s;
-            }
+            if (diff < minDiff) { minDiff = diff; bestMatch = s; }
         });
     }
 
-    const index = sizeChart.indexOf(bestMatch);
-    
+    const idx = chart.indexOf(bestMatch);
     return {
         standard: bestMatch,
-        tight: index > 0 ? sizeChart[index - 1] : null,
-        loose: index < sizeChart.length - 1 ? sizeChart[index + 1] : null
+        tight: idx > 0 ? chart[idx - 1] : null,
+        loose: idx < chart.length - 1 ? chart[idx + 1] : null
     };
 }
 
-function displayResult(res) {
+function displayResult(res, chart) {
     resultSection.classList.remove('hidden');
     setTimeout(() => resultSection.classList.add('show'), 10);
 
-    bestSizeEl.textContent = res.standard.size;
-    sizeNoteEl.textContent = res.standard.note;
-    standardSizeEl.textContent = res.standard.size;
+    document.getElementById('best-size').textContent = res.standard.size;
+    document.getElementById('size-note').textContent = res.standard.note;
+    document.getElementById('standard-size').textContent = res.standard.size;
     
+    const tEl = document.getElementById('tight-size');
+    const lEl = document.getElementById('loose-size');
+
     if (res.tight) {
-        tightSizeEl.textContent = res.tight.size;
+        tEl.textContent = res.tight.size;
         document.getElementById('tight-option').style.opacity = '1';
     } else {
-        tightSizeEl.textContent = '-';
+        tEl.textContent = '-';
         document.getElementById('tight-option').style.opacity = '0.3';
     }
 
     if (res.loose) {
-        looseSizeEl.textContent = res.loose.size;
+        lEl.textContent = res.loose.size;
         document.getElementById('loose-option').style.opacity = '1';
     } else {
-        looseSizeEl.textContent = '-';
+        lEl.textContent = '-';
         document.getElementById('loose-option').style.opacity = '0.3';
     }
 
