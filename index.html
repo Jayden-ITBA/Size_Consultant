@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Công cụ Tư vấn Size - Premium Brand</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="animate-fade-in">Tư vấn Size Thông Minh</h1>
+            <p class="subtitle animate-fade-in delay-1">Hãy nhập số đo của bạn để tìm size áo hoàn hảo nhất.</p>
+        </header>
+
+        <main class="glass-card animate-slide-up delay-2">
+            <div class="input-group">
+                <div class="field">
+                    <label for="height">Chiều cao (cm)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="height" placeholder="Ví dụ: 172" min="100" max="250">
+                        <span class="unit">cm</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="weight">Cân nặng (kg)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="weight" placeholder="Ví dụ: 68" min="30" max="200">
+                        <span class="unit">kg</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="calculate-btn" class="primary-btn">
+                <span>Tìm Size Ngay</span>
+                <div class="btn-glow"></div>
+            </button>
+
+            <div id="result-section" class="result-section hidden">
+                <div class="divider"></div>
+                
+                <div class="recommendation-main">
+                    <span class="label">Size phù hợp nhất của bạn:</span>
+                    <div class="size-display">
+                        <span id="best-size">M</span>
+                        <p id="size-note">Phù hợp gymmer</p>
+                    </div>
+                </div>
+
+                <div class="alternative-options">
+                    <div class="option" id="tight-option">
+                        <span class="option-label">Mặc ôm sát (Tight)</span>
+                        <span class="option-size" id="tight-size">S</span>
+                    </div>
+                    <div class="option active" id="standard-option">
+                        <span class="option-label">Vừa vặn (Standard)</span>
+                        <span class="option-size" id="standard-size">M</span>
+                    </div>
+                    <div class="option" id="loose-option">
+                        <span class="option-label">Rộng rãi (Loose)</span>
+                        <span class="option-size" id="loose-size">L</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Premium Fit Assistant. Toàn bộ dữ liệu dựa trên bảng size chuẩn của thương hiệu.</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "size-consultant-premium",
+  "version": 2,
+  "cleanUrls": true,
+  "framework": null,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
